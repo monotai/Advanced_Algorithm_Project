@@ -1,54 +1,72 @@
 #ifndef GRAPH_H
 #define GRAPH_H
+
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <climits>
+#include "./PriorityQueue.h"
 
 using namespace std;
-//undirected graph
-class Graph{
-    private:
-    vector<vector<pair<int,int>>> graph;
+
+//for set second element is priority
+class Compare{
     public:
-    Graph(int vertices) {
-        graph.resize(vertices);
-    }
-
-    void addVertices(int count) {
-        if (count <= 0) {
-            cout << "Error: The number of vertices to add must be positive." << endl;
-            return;
-        }
-        graph.resize(graph.size() + count);
-        cout << count << " vertices added. New total: " << graph.size() << " vertices." << endl;
-    }
-
-    void addEdge(int u, int v, int w) {
-        if (u >= graph.size() || v >= graph.size()) {
-            cout << "Error: Vertex index out of bounds!" << endl;
-            return;
-        }
-        graph[u].push_back({v, w});
-        graph[v].push_back({u, w});
-        
-    }
-
-    void displayAdjList() {
-        for (int i = 0; i < graph.size(); i++) {
-            cout << i << ": "; 
-            for (auto &j : graph[i]) {
-                cout << "{"<<j.first << ", "<<j.second<<"} "; 
-            }
-            cout << endl; 
-        }
-    }
-
-    int getVertexCount() const {
-        return graph.size();
-    }
-
-    void dijkstra(int start) {
-        vector<int> priorityQueue;
-        
+    bool operator()(const pair<int, int>& a, const pair<int, int>& b) {
+        return a.second > b.second;
     }
 };
+
+class Graph {
+    public:
+    int vertices;
+    vector<vector<pair<int, int>>> adjList;
+    vector<int> distanceMap;
+
+    Graph(int v) : vertices(v), adjList(v) , distanceMap(v){}
+    
+    void addEdge(int u, int v, int weight) {
+        adjList[u].emplace_back(v, weight);
+        adjList[v].emplace_back(u, weight);
+    }
+
+    void dijkstra(int source) {
+        priority_queue<pair<int,int>, vector<pair<int,int>>, Compare> priorityQueue;
+        vector<int> predecessor(vertices);
+
+        distanceMap[source] = 0;
+        priorityQueue.push({source, 0});
+
+        for(int i = 0;i < vertices;i++) {
+            if(i != source) {
+                predecessor[i] = -1;
+                distanceMap[i] = INT_MAX;
+                priorityQueue.push({i, INT_MAX});
+            }
+        }
+
+        while(!priorityQueue.empty()) {
+            int vertex = priorityQueue.top().first;
+            int distance = priorityQueue.top().second;
+            priorityQueue.pop();
+
+            for(auto& nieghbor : adjList[vertex]) {
+                int vertexNieghbor = nieghbor.first;
+                int alt = distanceMap[vertex] + nieghbor.second;
+                if(alt < distanceMap[vertexNieghbor]) {
+                    predecessor[vertexNieghbor] = vertex;
+                    distanceMap[vertexNieghbor] = alt;
+                    priorityQueue.push({vertexNieghbor, alt});
+                }
+            }
+        }
+        for (int i = 0; i < vertices; ++i) {
+        cout << "Vertex " << i << ": Distance = " << distanceMap[i];
+        if (predecessor[i] != -1)
+            cout << ", Previous Vertex = " << predecessor[i];
+        cout << endl;
+        }
+    }
+};
+
 #endif
