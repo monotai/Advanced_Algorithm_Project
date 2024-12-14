@@ -13,12 +13,11 @@ class Node{
 class PriorityQueue {
     public:
     Node* head;
-    int lenghth;
 
-    PriorityQueue() : head(nullptr) ,lenghth(0) {}
+    PriorityQueue() : head(nullptr) {}
     ~PriorityQueue() {
         while (head != nullptr) {
-            decrease_priority();
+            remove_min();
         }
     }
     
@@ -36,26 +35,53 @@ class PriorityQueue {
             newNode->next = current->next;
             current->next = newNode;
         }
-        lenghth++;
     }
 
-    void decrease_priority() {
-        if(head == nullptr) {
+    void decrease_priority(int vertex, int new_distance) {
+        if (head == nullptr) {
             return;
         }
-        Node* deleteNode = head;
-        head = head->next;
-        delete deleteNode;
-        lenghth--;
+
+        Node* current = head;
+        Node* previous = nullptr;
+
+        while (current != nullptr && current->vertex != vertex) {
+            previous = current;
+            current = current->next;
+        }
+
+        if (current == nullptr) {
+            add_with_priority(vertex, new_distance);
+            return;
+        }
+
+        if (previous == nullptr) {
+            head = current->next;
+        } else {
+            previous->next = current->next;
+        }
+
+        delete current;
+
+        add_with_priority(vertex, new_distance);
     }
+
     
     int extract_min() {
         if(head == nullptr) {
             return -1;
         }
         int vertex = head->vertex;
-        decrease_priority();
+        remove_min();
         return vertex;
+    }
+    void remove_min() {
+        if (head == nullptr) {
+            return;
+        }
+        Node* deleteNode = head;
+        head = head->next;
+        delete deleteNode;
     }
 };
 

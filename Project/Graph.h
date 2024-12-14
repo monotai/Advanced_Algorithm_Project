@@ -21,50 +21,55 @@ class Graph {
     public:
     int vertices;
     vector<vector<pair<int, int>>> adjList;
-    vector<int> distanceMap;
+    
 
-    Graph(int v) : vertices(v), adjList(v) , distanceMap(v){}
+    Graph(int v) : vertices(v), adjList(v) {}
     
     void addEdge(int u, int v, int weight) {
         adjList[u].emplace_back(v, weight);
         adjList[v].emplace_back(u, weight);
     }
 
-    void dijkstra(int source) {
-        priority_queue<pair<int,int>, vector<pair<int,int>>, Compare> priorityQueue;
-        vector<int> predecessor(vertices);
+    void dijkstra(int source, int* distM, int* prev) {
+        PriorityQueue pQ;
 
-        distanceMap[source] = 0;
-        priorityQueue.push({source, 0});
+        distM[source] = 0;
+        prev[source] = source;
+        pQ.add_with_priority(source, 0);
 
-        for(int i = 0;i < vertices;i++) {
-            if(i != source) {
-                predecessor[i] = -1;
-                distanceMap[i] = INT_MAX;
-                priorityQueue.push({i, INT_MAX});
+        for(int v = 0;v < vertices;v++) {
+            if(v != source) {
+                prev[v] = -1;
+                distM[v] = INT_MAX;
+                pQ.add_with_priority(v, INT_MAX);
             }
         }
-
-        while(!priorityQueue.empty()) {
-            int vertex = priorityQueue.top().first;
-            int distance = priorityQueue.top().second;
-            priorityQueue.pop();
-
-            for(auto& nieghbor : adjList[vertex]) {
-                int vertexNieghbor = nieghbor.first;
-                int alt = distanceMap[vertex] + nieghbor.second;
-                if(alt < distanceMap[vertexNieghbor]) {
-                    predecessor[vertexNieghbor] = vertex;
-                    distanceMap[vertexNieghbor] = alt;
-                    priorityQueue.push({vertexNieghbor, alt});
+        
+        while(pQ.head != nullptr) {
+            int u = pQ.extract_min();
+            for(auto& n : adjList[u]) {
+                int v = n.first;
+                int alt = distM[u] + n.second;
+                if(alt < distM[v]) {
+                    prev[v] = u;
+                    distM[v] = alt;
+                    pQ.decrease_priority(v, alt);
                 }
             }
         }
+        
+        cout << "Dijkstra's Algorithm Results (Source: " << source << ")\n";
         for (int i = 0; i < vertices; ++i) {
-        cout << "Vertex " << i << ": Distance = " << distanceMap[i];
-        if (predecessor[i] != -1)
-            cout << ", Previous Vertex = " << predecessor[i];
-        cout << endl;
+            cout << "Vertex " << i << ": Distance = ";
+            if (distM[i] == INT_MAX) {
+                cout << "Infinity"; // Unreachable vertex
+            } else {
+                cout << distM[i];
+            }
+            if (prev[i] != -1) {
+                cout << ", Previous Vertex = " << prev[i];
+            }
+            cout << endl;
         }
     }
 };

@@ -3,6 +3,7 @@
 int main() {
     int vertices = 6; // Number of vertices
     Graph graph(vertices);
+    int distM[vertices], prev[vertices];
 
     // Add edges (u, v, weight)
     graph.addEdge(0, 1, 4);
@@ -16,7 +17,7 @@ int main() {
 
     int source = 0; // Starting vertex
     cout << "Shortest paths from vertex " << source << ":\n";
-    graph.dijkstra(source);
+    graph.dijkstra(source, distM, prev);
 
     return 0;
 }
