@@ -18,6 +18,5 @@ int main() {
     int source = 0; // Starting vertex
     cout << "Shortest paths from vertex " << source << ":\n";
     graph.dijkstra(source, distM, prev);
-
     return 0;
 }
