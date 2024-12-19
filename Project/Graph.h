@@ -30,7 +30,7 @@ class Graph {
         adjList[v].emplace_back(u, weight);
     }
 
-    void dijkstra(int source, int* distM, int* prev) {
+    void dijkstra(int source, vector<int>& distM,  vector<int>& prev) {
         PriorityQueue pQ;
 
         distM[source] = 0;
@@ -58,19 +58,6 @@ class Graph {
             }
         }
         
-        cout << "Dijkstra's Algorithm Results (Source: " << source << ")\n";
-        for (int i = 0; i < vertices; ++i) {
-            cout << "Vertex " << i << ": Distance = ";
-            if (distM[i] == INT_MAX) {
-                cout << "Infinity"; // Unreachable vertex
-            } else {
-                cout << distM[i];
-            }
-            if (prev[i] != -1) {
-                cout << ", Previous Vertex = " << prev[i];
-            }
-            cout << endl;
-        }
     }
 };
 
