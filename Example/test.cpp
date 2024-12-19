@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
@@ -18,8 +19,8 @@ SDL_Window* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
 
 int main(int argc, char* args[]) {
-    ofstream node("node.txt", ios::app);
-    ofstream connection("conection.txt", ios::app);
+    ifstream node("node.txt", ios::app);
+    ifstream connection("conection.txt", ios::app);
     if (!init()) {
         cout << "Failed to initialize!\n";
     } 
@@ -29,11 +30,11 @@ int main(int argc, char* args[]) {
         SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
         SDL_RenderClear(gRenderer);
         SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
-        // SDL_Rect rect = {220, 140, 200, 200};
+        SDL_Rect rect = {220, 140, 200, 200};
+        
         // SDL_RenderFillRect(gRenderer, &rect);
         // SDL_RenderDrawLine(gRenderer, 30, 20, 40, 50);
         // SDL_RenderDrawPoint();
-        
         SDL_RenderPresent(gRenderer);
         SDL_Delay(2000);
         while (!quit) {
@@ -44,6 +45,8 @@ int main(int argc, char* args[]) {
         }
     }
     close();
+    node.close();
+    connection.close();
     return 0;
 } 
 
@@ -123,3 +126,6 @@ void close() {
 
 void createPoints(SDL_Renderer* renderer, ofstream* node) {
 }
+
+file(string nameFile){
+} 

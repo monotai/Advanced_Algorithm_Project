@@ -1,6 +1,12 @@
 #include "Graph.h"
+#include <time.h>
+
+void randpath(int vertices) {
+    int Meges = rand()%()
+}
 
 int main() {
+    srand(time(NULL));
     int vertices = 6; // Number of vertices
     Graph graph(vertices);
     int distM[vertices], prev[vertices];
