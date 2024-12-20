@@ -5,8 +5,21 @@
 #include <iostream>
 using namespace std;
 
+void randGraph(Graph& graph, int vertices, int MWeight) {
+    int M = vertices*(vertices-1)/2;
+    for(int i = 0;i < M;i++) {
+        int weight = rand()%MWeight;
+        int a, b;
+        do {
+            a = rand()%vertices;
+            b = rand()%vertices;
+        } while(graph.find(a,b));
+        graph.addEdge(a, b, weight);
+    }
+}
+
 void randpath(int vertices, Graph &graph, int maxWeight) {
-    srand(time(0));
+    
     int u = rand() % vertices; // Random starting vertex
     int v = rand() % vertices; // Random ending vertex
     // Ensure u and v are different to avoid self-loops
@@ -54,24 +67,14 @@ void printPath(vector<int> prev,int source,int end) {
 }
 
 int main() {
+    srand(time(0));
     int vertices = 6; // Number of vertices
     Graph graph(vertices);
     vector<int> disM(vertices), prev(vertices);
 
-    // Add edges (u, v, weight)
-    graph.addEdge(0, 1, 4);
-    graph.addEdge(0, 2, 4);
-    graph.addEdge(1, 2, 2);
-    graph.addEdge(1, 3, 5);
-    graph.addEdge(2, 3, 8);
-    graph.addEdge(3, 4, 6);
-    graph.addEdge(4, 5, 9);
-    graph.addEdge(3, 5, 4);
-
-    // Adding random edges with a maximum weight of 10
-    randpath(vertices, graph, 10);
-    randpath(vertices, graph, 10);
-
+    for(int i = 0;i < 10;i++) {
+        randpath(vertices, graph, 10);
+    }
     int source = 0, end = 3; // Starting vertex
     cout << "Shortest paths from vertex " << source << ":\n";
     graph.dijkstra(source, disM, prev);

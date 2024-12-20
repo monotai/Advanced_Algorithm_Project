@@ -9,14 +9,6 @@
 
 using namespace std;
 
-//for set second element is priority
-class Compare{
-    public:
-    bool operator()(const pair<int, int>& a, const pair<int, int>& b) {
-        return a.second > b.second;
-    }
-};
-
 class Graph {
     public:
     int vertices;
@@ -58,6 +50,14 @@ class Graph {
             }
         }
         
+    }
+    bool find(int a, int b) {
+        for(auto v : adjList[a]) {
+            if(v.first == b) {
+                return true;
+            }
+        }
+        return false;
     }
 };
 
