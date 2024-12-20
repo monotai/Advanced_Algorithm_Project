@@ -168,6 +168,7 @@ int main() {
                     break;
             }
         }
+        
         cout << "Do you want to add a random edge? (y/n): ";
         char c;
         cin >> c;
