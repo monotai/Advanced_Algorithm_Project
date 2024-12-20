@@ -68,6 +68,7 @@ void printPath(vector<int> prev,int source,int end) {
 
 int main() {
     srand(time(0));
+    
     int vertices = 6; // Number of vertices
     Graph graph(vertices);
     vector<int> disM(vertices), prev(vertices);
