@@ -71,10 +71,8 @@ int main() {
     int vertices = 6; // Number of vertices
     Graph graph(vertices);
     vector<int> disM(vertices), prev(vertices);
-
-    for(int i = 0;i < 10;i++) {
-        randpath(vertices, graph, 10);
-    }
+    randGraph(graph, vertices, 10);
+    cout << graph.printGraph() << endl;;
     int source = 0, end = 3; // Starting vertex
     cout << "Shortest paths from vertex " << source << ":\n";
     graph.dijkstra(source, disM, prev);

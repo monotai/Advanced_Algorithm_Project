@@ -59,6 +59,17 @@ class Graph {
         }
         return false;
     }
+    string printGraph() {
+        string result;
+        for (int i = 0; i < vertices; ++i) {
+            result += to_string(i) + ": ";
+            for (auto& neighbor : adjList[i]) {
+                result += "(" + to_string(neighbor.first) + ", " + to_string(neighbor.second) + ") ";
+            }
+            result += "\n";
+        }
+        return result;
+    }
 };
 
 #endif
