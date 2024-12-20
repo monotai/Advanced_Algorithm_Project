@@ -76,17 +76,12 @@ int main() {
     Graph graph(vertices);
     vector<int> disM(vertices), prev(vertices);
 
-    randGraph(graph, vertices, 10);
-    cout << graph.printGraph() << endl;
-
-    int source = 0, end = 3; // Default source and destination vertices
-    graph.dijkstra(source, disM, prev);
-    printDistanceMap(disM, source);
-    printPath(prev, source, end);
-
     bool run = true;
+    bool hasGraph = false;
+    bool findPath = false;
+
     while (run) {
-        cout << "\nMenu:\n";
+        cout << "\nMain Menu:\n";
         cout << "1. Generate Random Graph\n";
         cout << "2. Insert Graph Manually\n";
         cout << "3. Exit\n";
@@ -95,7 +90,7 @@ int main() {
         cin >> choice;
 
         switch (choice) {
-            case 1: {
+            case 1: { // Generate random graph
                 cout << "Input number of vertices: ";
                 cin >> vertices;
                 cout << "Input max weight for edges: ";
@@ -107,12 +102,15 @@ int main() {
                 cout << graph.printGraph() << endl;
 
                 cout << "Input source vertex for Dijkstra's algorithm: ";
+                int source;
                 cin >> source;
                 graph.dijkstra(source, disM, prev);
                 printDistanceMap(disM, source);
+
+                hasGraph = true;
                 break;
             }
-            case 2: {
+            case 2: { // Insert graph manually
                 cout << "Input number of vertices: ";
                 cin >> vertices;
                 graph = Graph(vertices);
@@ -130,12 +128,15 @@ int main() {
                 cout << graph.printGraph() << endl;
 
                 cout << "Input source vertex for Dijkstra's algorithm: ";
+                int source;
                 cin >> source;
                 graph.dijkstra(source, disM, prev);
                 printDistanceMap(disM, source);
+
+                hasGraph = true;
                 break;
             }
-            case 3:
+            case 3: // Exit
                 run = false;
                 break;
 
@@ -143,13 +144,63 @@ int main() {
                 cout << "Invalid choice. Please try again.\n";
         }
 
-        if (run) {
-            cout << "\nDo you want to add a random edge? (y/n): ";
-            char c;
-            cin >> c;
-            if (c == 'y') {
-                randpath(vertices, graph, 10);
-                cout << graph.printGraph() << endl;
+        if (hasGraph) {
+            cout << "\nGraph Menu:\n";
+            cout << "1. Print Graph\n";
+            cout << "2. Run Dijkstra's Algorithm\n";
+            cout << "3. Back to Main Menu\n";
+            cout << "Enter your choice: ";
+            int subChoice;
+            cin >> subChoice;
+
+            switch (subChoice) {
+                case 1: // Print the graph
+                    cout << graph.printGraph() << endl;
+                    break;
+                case 2: { // Run Dijkstra's algorithm
+                    cout << "Input source vertex for Dijkstra's algorithm: ";
+                    int source;
+                    cin >> source;
+                    graph.dijkstra(source, disM, prev);
+                    findPath = true;
+                    break;
+                }
+                case 3: // Back to main menu
+                    break;
+
+                default:
+                    cout << "Invalid choice. Please try again.\n";
+            }
+
+            if (findPath) {
+                cout << "\nPath Menu:\n";
+                cout << "1. Print Distance Map\n";
+                cout << "2. Print Path\n";
+                cout << "3. Back to Graph Menu\n";
+                cout << "Enter your choice: ";
+                int pathChoice;
+                cin >> pathChoice;
+
+                switch (pathChoice) {
+                    case 1: // Print the distance map
+                        cout << "Input source vertex: ";
+                        int source;
+                        cin >> source;
+                        printDistanceMap(disM, source);
+                        break;
+                    case 2: { // Print the path
+                        cout << "Input destination vertex: ";
+                        int end;
+                        cin >> end;
+                        printPath(prev, 0, end); // Assumes source vertex is 0; can be adjusted
+                        break;
+                    }
+                    case 3: // Back to graph menu
+                        break;
+
+                    default:
+                        cout << "Invalid choice. Please try again.\n";
+                }
             }
         }
     }
