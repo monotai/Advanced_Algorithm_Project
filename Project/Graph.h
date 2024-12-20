@@ -11,11 +11,18 @@ using namespace std;
 
 class Graph {
     public:
-    int vertices;
     vector<vector<pair<int, int>>> adjList;
     
 
-    Graph(int v) : vertices(v), adjList(v) {}
+    Graph(int v) : adjList(v) {}
+
+    void addVertices(int vertex) {
+        int oldsize = adjList.size();
+        adjList.resize(oldsize + vertex);
+        if(adjList.size()-vertex < oldsize) {
+            cout << "Error: Could not add vertices\n";
+        }
+    }
     
     void addEdge(int u, int v, int weight) {
         adjList[u].emplace_back(v, weight);
@@ -29,7 +36,7 @@ class Graph {
         prev[source] = source;
         pQ.add_with_priority(source, 0);
 
-        for(int v = 0;v < vertices;v++) {
+        for(int v = 0;v < adjList.size();v++) {
             if(v != source) {
                 prev[v] = -1;
                 distM[v] = INT_MAX;
@@ -61,7 +68,7 @@ class Graph {
     }
     string printGraph() {
         string result;
-        for (int i = 0; i < vertices; ++i) {
+        for (int i = 0; i < adjList.size(); ++i) {
             result += to_string(i) + ": ";
             for (auto& neighbor : adjList[i]) {
                 result += "(" + to_string(neighbor.first) + ", " + to_string(neighbor.second) + ") ";
