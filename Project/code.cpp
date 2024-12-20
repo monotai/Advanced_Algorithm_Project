@@ -5,25 +5,25 @@
 #include <iostream>
 using namespace std;
 
-void randGraph(Graph& graph, int vertices, int MWeight) {
-    int M = vertices*(vertices-1)/2;
-    for(int i = 0;i < M;i++) {
-        int weight = rand()%MWeight;
+// Function to generate a random graph
+void randGraph(Graph& graph, int vertices, int maxWeight) {
+    int maxEdges = vertices * (vertices - 1) / 2;
+    for (int i = 0; i < maxEdges; ++i) {
+        int weight = rand() % maxWeight + 1;
         int a, b;
         do {
-            a = rand()%vertices;
-            b = rand()%vertices;
-        } while(graph.find(a,b));
+            a = rand() % vertices;
+            b = rand() % vertices;
+        } while (a == b || graph.find(a, b)); // Avoid self-loops and duplicate edges
         graph.addEdge(a, b, weight);
     }
 }
 
-void randpath(int vertices, Graph &graph, int maxWeight) {
-    
-    int u = rand() % vertices; // Random starting vertex
-    int v = rand() % vertices; // Random ending vertex
-    // Ensure u and v are different to avoid self-loops
-    while (u == v) {
+// Function to add a random edge
+void randpath(int vertices, Graph& graph, int maxWeight) {
+    int u = rand() % vertices;
+    int v = rand() % vertices;
+    while (u == v || graph.find(u, v)) {
         v = rand() % vertices;
     }
     int weight = rand() % maxWeight + 1;
@@ -31,29 +31,32 @@ void randpath(int vertices, Graph &graph, int maxWeight) {
     cout << "Randomly added edge: " << u << " -> " << v << " with weight " << weight << '\n';
 }
 
-void printDistanceMap(vector<int> disM, int souse) {
-    if(disM.empty()) {
-        cout << "No Data!\nPlease Run Dijkstra Algoritm Again!\n";
+// Function to print the distance map
+void printDistanceMap(const vector<int>& disM, int source) {
+    if (disM.empty()) {
+        cout << "No data! Please run Dijkstra's algorithm again.\n";
         return;
     }
-    for(int i = 0;i < disM.size();i++) {
-        cout << "Distand from " << souse << "to" << i << " is: " << disM[i] << '\n';
+    for (size_t i = 0; i < disM.size(); ++i) {
+        cout << "Distance from " << source << " to " << i << " is: " << disM[i] << '\n';
     }
 }
-void printPath(vector<int> prev,int source,int end) {
-    if(prev.empty()) {
-        cout << "No Data!\nPlease Run Dijkstra Algoritm Again!\n";
+
+// Function to print the path from source to destination
+void printPath(const vector<int>& prev, int source, int end) {
+    if (prev.empty()) {
+        cout << "No data! Please run Dijkstra's algorithm again.\n";
         return;
     }
     stack<int> path;
-    int i = end;
-    while(i != source) {
-        if(i == -1) {
+    int current = end;
+    while (current != source) {
+        if (current == -1) {
             cout << "No valid path exists.\n";
             return;
         }
-        path.push(i);
-        i = prev[i];
+        path.push(current);
+        current = prev[current];
     }
     path.push(source);
 
@@ -67,121 +70,89 @@ void printPath(vector<int> prev,int source,int end) {
 }
 
 int main() {
-    srand(time(0));
-    
-    int vertices = 6; // Number of vertices
+    srand(static_cast<unsigned>(time(0)));
+
+    int vertices = 6; // Default number of vertices
     Graph graph(vertices);
     vector<int> disM(vertices), prev(vertices);
+
     randGraph(graph, vertices, 10);
-    cout << graph.printGraph() << endl;;
-    int source = 0, end = 3; // Starting vertex
-    cout << "Shortest paths from vertex " << source << ":\n";
+    cout << graph.printGraph() << endl;
+
+    int source = 0, end = 3; // Default source and destination vertices
     graph.dijkstra(source, disM, prev);
     printDistanceMap(disM, source);
     printPath(prev, source, end);
-    bool run = true;
-    while(run) {
-        //wellcome to the program
-        //1, rand graph
-        //2, insert graph
-        //input vertices
-        //input edges
-        //Graph graph(vertices);
-        //input in form vetex, vertex, weight
-        //grph.addEdge(0, 1, 1); 
-        //3. about this program
-        //4. exit
 
-        //rand, insert,
-        //print graph, dijkstra, back
-        //print graph,print distace map, print path, back
-        cout << "1, rand, 2 inser, 3 close" << endl;
+    bool run = true;
+    while (run) {
+        cout << "\nMenu:\n";
+        cout << "1. Generate Random Graph\n";
+        cout << "2. Insert Graph Manually\n";
+        cout << "3. Exit\n";
+        cout << "Enter your choice: ";
         int choice;
-        bool hasgraph = false;
-        bool find = false;
         cin >> choice;
-        switch(choice) {
-            case 1://rand
-                cout << "Input vertices: ";
+
+        switch (choice) {
+            case 1: {
+                cout << "Input number of vertices: ";
                 cin >> vertices;
-                cout << "Input edges: ";
-                cin >> source;
+                cout << "Input max weight for edges: ";
+                int maxWeight;
+                cin >> maxWeight;
+
                 graph = Graph(vertices);
-                randGraph(graph, vertices, source);
+                randGraph(graph, vertices, maxWeight);
                 cout << graph.printGraph() << endl;
-                cout << "Shortest paths from vertex " << source << ":\n";
+
+                cout << "Input source vertex for Dijkstra's algorithm: ";
+                cin >> source;
                 graph.dijkstra(source, disM, prev);
                 printDistanceMap(disM, source);
-                printPath(prev, source, end);
-                hasgraph = true;
                 break;
-            case 2://insert
-                cout << "Input vertices: ";
+            }
+            case 2: {
+                cout << "Input number of vertices: ";
                 cin >> vertices;
-                cout << "Input edges: ";
-                cin >> source;
                 graph = Graph(vertices);
-                for(int i = 0;i < source;i++) {
+
+                cout << "Input number of edges: ";
+                int numEdges;
+                cin >> numEdges;
+
+                cout << "Enter edges (format: vertex1 vertex2 weight):\n";
+                for (int i = 0; i < numEdges; ++i) {
                     int a, b, weight;
                     cin >> a >> b >> weight;
                     graph.addEdge(a, b, weight);
                 }
                 cout << graph.printGraph() << endl;
-                cout << "Shortest paths from vertex " << source << ":\n";
+
+                cout << "Input source vertex for Dijkstra's algorithm: ";
+                cin >> source;
                 graph.dijkstra(source, disM, prev);
                 printDistanceMap(disM, source);
-                printPath(prev, source, end);
-                hasgraph = true;
                 break;
-            case 3://stop
+            }
+            case 3:
                 run = false;
                 break;
+
+            default:
+                cout << "Invalid choice. Please try again.\n";
         }
-        if(hasgraph) {
-            
-            cout << "print graph, dijkstra, back" << endl;
-            int chioces;
-            switch(chioces) {
-                case 1:
-                    cout << graph.printGraph() << endl;
-                    break;
-                case 2:
-                    cout << "Shortest paths from vertex " << source << ":\n";
-                    graph.dijkstra(source, disM, prev);
-                    find = true;
-                    break;
-                case 3:
-                    break;
+
+        if (run) {
+            cout << "\nDo you want to add a random edge? (y/n): ";
+            char c;
+            cin >> c;
+            if (c == 'y') {
+                randpath(vertices, graph, 10);
+                cout << graph.printGraph() << endl;
             }
-        }
-        if(find) {
-            cout << "1, print distace map, 2, print path, 3, back" << endl;	
-            int chioces;
-            switch(chioces) {
-                case 1:
-                    printDistanceMap(disM, source);
-                    break;
-                case 2:
-                    printPath(prev, source, end);
-                    break;
-                case 3:
-                    break;
-            }
-        }
-        
-        cout << "Do you want to add a random edge? (y/n): ";
-        char c;
-        cin >> c;
-        if(c == 'y') {
-            randpath(vertices, graph, 10);
-            cout << graph.printGraph() << endl;
-            cout << "Shortest paths from vertex " << source << ":\n";
-            graph.dijkstra(source, disM, prev);
-            printDistanceMap(disM, source);
-            printPath(prev, source, end);
-        } else {
-            run = false;
         }
     }
+
     return 0;
 }
