@@ -23,7 +23,7 @@ class Graph {
             cout << "Error: Could not add vertices\n";
         }
     }
-    
+
     void addEdge(int u, int v, int weight) {
         adjList[u].emplace_back(v, weight);
         adjList[v].emplace_back(u, weight);

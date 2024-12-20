@@ -6,7 +6,7 @@
 using namespace std;
 
 // Function to generate a random graph
-void randGraph(Graph& graph, int vertices, int maxWeight) {
+void randGraph(Graph* graph, int vertices, int maxWeight) {
     int maxEdges = vertices * (vertices - 1) / 2;
     for (int i = 0; i < maxEdges; ++i) {
         int weight = rand() % maxWeight + 1;
@@ -14,21 +14,20 @@ void randGraph(Graph& graph, int vertices, int maxWeight) {
         do {
             a = rand() % vertices;
             b = rand() % vertices;
-        } while (a == b || graph.find(a, b)); // Avoid self-loops and duplicate edges
-        graph.addEdge(a, b, weight);
+        } while (a == b || graph->find(a, b)); // Avoid self-loops and duplicate edges
+        graph->addEdge(a, b, weight);
     }
 }
 
 // Function to add a random edge
-void randpath(int vertices, Graph& graph, int maxWeight) {
-    int u = rand() % vertices;
+void randpath(Graph* graph,int vertices, int vertex, int maxWeight) {
     int v = rand() % vertices;
-    while (u == v || graph.find(u, v)) {
+    while (vertex == v || graph->find(vertex, v)) {
         v = rand() % vertices;
     }
     int weight = rand() % maxWeight + 1;
-    graph.addEdge(u, v, weight);
-    cout << "Randomly added edge: " << u << " -> " << v << " with weight " << weight << '\n';
+    graph->addEdge(vertex, v, weight);
+    cout << "Randomly added edge: " << vertex << " -> " << v << " with weight " << weight << '\n';
 }
 
 // Function to print the distance map
@@ -72,15 +71,13 @@ void printPath(const vector<int>& prev, int source, int end) {
 int main() {
     srand(static_cast<unsigned>(time(0)));
 
-    int vertices = 6; // Default number of vertices
-    Graph graph(vertices);
-    vector<int> disM(vertices), prev(vertices);
-
     bool run = true;
-    bool hasGraph = false;
-    bool findPath = false;
-
     while (run) {
+        Graph *graph = nullptr;
+        vector<int> disM, prev;
+        int vertices;
+        bool hasGraph = false;
+        bool findPath = false;
         cout << "\nMain Menu:\n";
         cout << "1. Generate Random Graph\n";
         cout << "2. Insert Graph Manually\n";
@@ -97,23 +94,20 @@ int main() {
                 int maxWeight;
                 cin >> maxWeight;
 
-                graph = Graph(vertices);
+                graph = new Graph(vertices);
+                disM.resize(vertices);
+                prev.resize(vertices);
                 randGraph(graph, vertices, maxWeight);
-                cout << graph.printGraph() << endl;
-
-                cout << "Input source vertex for Dijkstra's algorithm: ";
-                int source;
-                cin >> source;
-                graph.dijkstra(source, disM, prev);
-                printDistanceMap(disM, source);
-
+                cout << graph->printGraph() << endl;
                 hasGraph = true;
                 break;
             }
             case 2: { // Insert graph manually
                 cout << "Input number of vertices: ";
                 cin >> vertices;
-                graph = Graph(vertices);
+                graph = new Graph(vertices);
+                disM.resize(vertices);
+                prev.resize(vertices);
 
                 cout << "Input number of edges: ";
                 int numEdges;
@@ -123,16 +117,9 @@ int main() {
                 for (int i = 0; i < numEdges; ++i) {
                     int a, b, weight;
                     cin >> a >> b >> weight;
-                    graph.addEdge(a, b, weight);
+                    graph->addEdge(a, b, weight);
                 }
-                cout << graph.printGraph() << endl;
-
-                cout << "Input source vertex for Dijkstra's algorithm: ";
-                int source;
-                cin >> source;
-                graph.dijkstra(source, disM, prev);
-                printDistanceMap(disM, source);
-
+                cout << graph->printGraph() << endl;
                 hasGraph = true;
                 break;
             }
@@ -144,7 +131,8 @@ int main() {
                 cout << "Invalid choice. Please try again.\n";
         }
 
-        if (hasGraph) {
+        while (hasGraph) {
+            int source;
             cout << "\nGraph Menu:\n";
             cout << "1. Print Graph\n";
             cout << "2. Run Dijkstra's Algorithm\n";
@@ -155,24 +143,25 @@ int main() {
 
             switch (subChoice) {
                 case 1: // Print the graph
-                    cout << graph.printGraph() << endl;
+                    cout << graph->printGraph() << endl;
                     break;
                 case 2: { // Run Dijkstra's algorithm
                     cout << "Input source vertex for Dijkstra's algorithm: ";
-                    int source;
                     cin >> source;
-                    graph.dijkstra(source, disM, prev);
+                    graph->dijkstra(source, disM, prev);
                     findPath = true;
                     break;
                 }
                 case 3: // Back to main menu
+                    hasGraph = false;
                     break;
 
                 default:
                     cout << "Invalid choice. Please try again.\n";
             }
 
-            if (findPath) {
+            while (findPath) {
+                int end;
                 cout << "\nPath Menu:\n";
                 cout << "1. Print Distance Map\n";
                 cout << "2. Print Path\n";
@@ -183,19 +172,16 @@ int main() {
 
                 switch (pathChoice) {
                     case 1: // Print the distance map
-                        cout << "Input source vertex: ";
-                        int source;
-                        cin >> source;
                         printDistanceMap(disM, source);
                         break;
                     case 2: { // Print the path
                         cout << "Input destination vertex: ";
-                        int end;
                         cin >> end;
-                        printPath(prev, 0, end); // Assumes source vertex is 0; can be adjusted
+                        printPath(prev, source, end);
                         break;
                     }
                     case 3: // Back to graph menu
+                        findPath = false;
                         break;
 
                     default:
@@ -203,6 +189,7 @@ int main() {
                 }
             }
         }
+        delete graph;
     }
 
     return 0;
