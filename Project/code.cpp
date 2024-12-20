@@ -20,22 +20,15 @@ void randGraph(Graph& graph, int vertices, int maxWeight) {
 }
 
 // Function to add a random edge
-void randpath(Graph& graph,int vertices, int vertex, int maxWeight) {
+void randpath(int vertices, Graph& graph, int maxWeight) {
+    int u = rand() % vertices;
     int v = rand() % vertices;
-    while (vertex == v || graph.find(vertex, v)) {
+    while (u == v || graph.find(u, v)) {
         v = rand() % vertices;
     }
     int weight = rand() % maxWeight + 1;
-    graph.addEdge(vertex, v, weight);
-    cout << "Randomly added edge: " << vertex << " -> " << v << " with weight " << weight << '\n';
-}
-
-void fullConected(Graph& graph, int vertices, int maxWeight) {
-    for(int i = 0; i < vertices; i++) {
-        if(graph.adjList[i].size() == 0) {
-            randpath(graph, vertices, i, maxWeight);
-        }
-    }
+    graph.addEdge(u, v, weight);
+    cout << "Randomly added edge: " << u << " -> " << v << " with weight " << weight << '\n';
 }
 
 // Function to print the distance map
@@ -50,7 +43,7 @@ void printDistanceMap(const vector<int>& disM, int source) {
 }
 
 // Function to print the path from source to destination
-void printFastPath(const vector<int>& prev, int source, int end) {
+void printPath(const vector<int>& prev, int source, int end) {
     if (prev.empty()) {
         cout << "No data! Please run Dijkstra's algorithm again.\n";
         return;
@@ -78,13 +71,17 @@ void printFastPath(const vector<int>& prev, int source, int end) {
 
 int main() {
     srand(static_cast<unsigned>(time(0)));
+
+    int vertices = 6; // Default number of vertices
+    Graph graph(vertices);
+    vector<int> disM(vertices), prev(vertices);
+
     bool run = true;
+    bool hasGraph = false;
+    bool findPath = false;
+
     while (run) {
-        Graph graph(0);
-        int vertices, source;
-        vector<int> disM, prev;
-        bool hasGraph = false;
-        cout << "\nMenu:\n";
+        cout << "\nMain Menu:\n";
         cout << "1. Generate Random Graph\n";
         cout << "2. Insert Graph Manually\n";
         cout << "3. Exit\n";
@@ -93,7 +90,7 @@ int main() {
         cin >> choice;
 
         switch (choice) {
-            case 1: {
+            case 1: { // Generate random graph
                 cout << "Input number of vertices: ";
                 cin >> vertices;
                 cout << "Input max weight for edges: ";
@@ -103,10 +100,17 @@ int main() {
                 graph = Graph(vertices);
                 randGraph(graph, vertices, maxWeight);
                 cout << graph.printGraph() << endl;
+
+                cout << "Input source vertex for Dijkstra's algorithm: ";
+                int source;
+                cin >> source;
+                graph.dijkstra(source, disM, prev);
+                printDistanceMap(disM, source);
+
                 hasGraph = true;
                 break;
             }
-            case 2: {
+            case 2: { // Insert graph manually
                 cout << "Input number of vertices: ";
                 cin >> vertices;
                 graph = Graph(vertices);
@@ -124,21 +128,80 @@ int main() {
                 cout << graph.printGraph() << endl;
 
                 cout << "Input source vertex for Dijkstra's algorithm: ";
+                int source;
                 cin >> source;
                 graph.dijkstra(source, disM, prev);
                 printDistanceMap(disM, source);
+
                 hasGraph = true;
                 break;
             }
-            case 3:
+            case 3: // Exit
                 run = false;
                 break;
 
             default:
                 cout << "Invalid choice. Please try again.\n";
         }
-        if(run && hasGraph) {
 
+        if (hasGraph) {
+            cout << "\nGraph Menu:\n";
+            cout << "1. Print Graph\n";
+            cout << "2. Run Dijkstra's Algorithm\n";
+            cout << "3. Back to Main Menu\n";
+            cout << "Enter your choice: ";
+            int subChoice;
+            cin >> subChoice;
+
+            switch (subChoice) {
+                case 1: // Print the graph
+                    cout << graph.printGraph() << endl;
+                    break;
+                case 2: { // Run Dijkstra's algorithm
+                    cout << "Input source vertex for Dijkstra's algorithm: ";
+                    int source;
+                    cin >> source;
+                    graph.dijkstra(source, disM, prev);
+                    findPath = true;
+                    break;
+                }
+                case 3: // Back to main menu
+                    break;
+
+                default:
+                    cout << "Invalid choice. Please try again.\n";
+            }
+
+            if (findPath) {
+                cout << "\nPath Menu:\n";
+                cout << "1. Print Distance Map\n";
+                cout << "2. Print Path\n";
+                cout << "3. Back to Graph Menu\n";
+                cout << "Enter your choice: ";
+                int pathChoice;
+                cin >> pathChoice;
+
+                switch (pathChoice) {
+                    case 1: // Print the distance map
+                        cout << "Input source vertex: ";
+                        int source;
+                        cin >> source;
+                        printDistanceMap(disM, source);
+                        break;
+                    case 2: { // Print the path
+                        cout << "Input destination vertex: ";
+                        int end;
+                        cin >> end;
+                        printPath(prev, 0, end); // Assumes source vertex is 0; can be adjusted
+                        break;
+                    }
+                    case 3: // Back to graph menu
+                        break;
+
+                    default:
+                        cout << "Invalid choice. Please try again.\n";
+                }
+            }
         }
     }
 
