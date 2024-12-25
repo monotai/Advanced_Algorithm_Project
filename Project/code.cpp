@@ -3,6 +3,7 @@
 #include <stack>
 #include <ctime>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 // Function to generate a random graph
@@ -108,10 +109,11 @@ int main() {
                 graph = new Graph(vertices);
                 disM.resize(vertices);
                 prev.resize(vertices);
-
-                cout << "Input number of edges: ";
                 int numEdges;
-                cin >> numEdges;
+                do {
+                    cout << "Input number of edges: ";
+                    cin >> numEdges;
+                }while(numEdges > vertices*(vertices-1)/2);
 
                 cout << "Enter edges (format: vertex1 vertex2 weight):\n";
                 for (int i = 0; i < numEdges; ++i) {
@@ -123,13 +125,37 @@ int main() {
                 hasGraph = true;
                 break;
             }
-            case 3: // Exit
-                run = false;
-                break;
-
-            default:
-                cout << "Invalid choice. Please try again.\n";
+        case 3:{ // insert from file
+            string nameFile;
+            cout << "input name of name of file: ";
+            cin >> nameFile;
+            ifstream file(nameFile);
+            if(file.is_open()){
+                file >> vertices;
+                graph = new Graph(vertices);
+                disM.resize(vertices);
+                prev.resize(vertices);
+                int numEdges;
+                file >> numEdges;
+                for (int i = 0; i < numEdges; ++i) {
+                    int a, b, weight;
+                    char comar;
+                    file >> a >> comar >> b >> comar >> weight>> comar;
+                    graph->addEdge(a, b, weight);
+                }
+                cout << graph->printGraph() << endl;
+                hasGraph = true;
+                }
+            file.close();
+            break;
+            }
+        case 4:{ //Exit
+            run = false;
+            break;}
+        default:
+            cout << "Invalid choice. Please try again.\n";
         }
+        
 
         while (hasGraph) {
             int source;
