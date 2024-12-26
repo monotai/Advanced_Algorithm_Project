@@ -4,7 +4,11 @@
 #include <ctime>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 using namespace std;
+
+void LoadFromFile(Graph*& graph, string nameFile);
+void SaveToFile(Graph* graph, string nameFile);
 
 // Function to generate a random graph
 void randGraph(Graph* graph, int vertices, int maxWeight) {
@@ -82,7 +86,8 @@ int main() {
         cout << "\nMain Menu:\n";
         cout << "1. Generate Random Graph\n";
         cout << "2. Insert Graph Manually\n";
-        cout << "3. Exit\n";
+        cout << "3. Insert Graph from File\n";
+        cout << "4. Exit\n";
         cout << "Enter your choice: ";
         int choice;
         cin >> choice;
@@ -129,24 +134,13 @@ int main() {
             string nameFile;
             cout << "input name of name of file: ";
             cin >> nameFile;
-            ifstream file(nameFile);
-            if(file.is_open()){
-                file >> vertices;
-                graph = new Graph(vertices);
-                disM.resize(vertices);
-                prev.resize(vertices);
-                int numEdges;
-                file >> numEdges;
-                for (int i = 0; i < numEdges; ++i) {
-                    int a, b, weight;
-                    char comar;
-                    file >> a >> comar >> b >> comar >> weight>> comar;
-                    graph->addEdge(a, b, weight);
-                }
+            LoadFromFile(graph, nameFile);
+            if (graph != nullptr) {
+                disM.resize(graph->size());
+                prev.resize(graph->size());
                 cout << graph->printGraph() << endl;
                 hasGraph = true;
-                }
-            file.close();
+            }
             break;
             }
         case 4:{ //Exit
@@ -155,14 +149,14 @@ int main() {
         default:
             cout << "Invalid choice. Please try again.\n";
         }
-        
 
         while (hasGraph) {
             int source;
             cout << "\nGraph Menu:\n";
             cout << "1. Print Graph\n";
             cout << "2. Run Dijkstra's Algorithm\n";
-            cout << "3. Back to Main Menu\n";
+            cout << "3. Save Graph to file\n";
+            cout << "4. Back to Main Menu\n";
             cout << "Enter your choice: ";
             int subChoice;
             cin >> subChoice;
@@ -178,7 +172,14 @@ int main() {
                     findPath = true;
                     break;
                 }
-                case 3: // Back to main menu
+                case 3: { // Save graph to file
+                    string nameFile;
+                    cout << "input name of file: ";
+                    cin >> nameFile;
+                    SaveToFile(graph, nameFile);
+                    break;
+                }
+                case 4: // Back to main menu
                     hasGraph = false;
                     break;
 
@@ -219,4 +220,50 @@ int main() {
     }
 
     return 0;
+}
+
+void SaveToFile(Graph* graph, string nameFile){
+    ofstream file(nameFile);
+    if(file.is_open()){
+        file << graph->size() << "\n";
+        for(int i = 0; i < graph->size(); i++){
+            file << i << ": ";
+            for(auto& neighbor : graph->adjList[i]){
+                file << "(" << neighbor.first << ", " << neighbor.second << ") ";
+            }
+            file << "\n";
+        }
+    }
+    file.close();
+}
+
+void LoadFromFile(Graph*& graph, string nameFile) {
+    ifstream file(nameFile);
+    if (!file.is_open()) {
+        cout << "Error: Unable to open file \"" << nameFile << "\".\n";
+        return;
+    }
+    int vertices;
+    file >> vertices; // Read the number of vertices
+    if(vertices <= 0) {
+        cout << "Error: Invalid number of vertices.\n";
+        return;
+    }
+    graph = new Graph(vertices);
+    string line;
+    getline(file, line); // Move to the next line after reading vertices
+    for (int i = 0; i < vertices; ++i) {
+        getline(file, line);
+        istringstream iss(line);
+        int vertex;
+        char colon;
+        iss >> vertex >> colon;
+        int neighbor, weight;
+        char open, comma, close;
+        while (iss >> open >> neighbor >> comma >> weight >> close) {
+            graph->addEdge(vertex, neighbor, weight);
+        }
+    }
+    file.close();
+    cout << "Graph loaded successfully from \"" << nameFile << "\".\n";
 }

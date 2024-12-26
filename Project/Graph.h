@@ -25,6 +25,9 @@ class Graph {
     }
 
     void addEdge(int u, int v, int weight) {
+        if(find(u, v)) {
+            return;
+        }
         adjList[u].emplace_back(v, weight);
         adjList[v].emplace_back(u, weight);
     }
@@ -76,6 +79,9 @@ class Graph {
             result += "\n";
         }
         return result;
+    }
+    int size() {
+        return adjList.size();
     }
 };
 
