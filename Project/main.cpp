@@ -14,13 +14,13 @@ void SaveToFile(Graph* graph, string nameFile);
 void randGraph(Graph* graph, int vertices, int maxWeight) {
     int maxEdges = vertices * (vertices - 1) / 2;
     for (int i = 0; i < maxEdges; ++i) {
-        int weight = rand() % maxWeight + 1;
+        int distance = rand() % maxWeight + 1;
         int a, b;
         do {
             a = rand() % vertices;
             b = rand() % vertices;
         } while (a == b || graph->find(a, b)); // Avoid self-loops and duplicate edges
-        graph->addEdge(a, b, weight);
+        graph->addEdge(a, b, distance);
     }
 }
 
@@ -30,9 +30,9 @@ void randpath(Graph* graph,int vertices, int vertex, int maxWeight) {
     while (vertex == v || graph->find(vertex, v)) {
         v = rand() % vertices;
     }
-    int weight = rand() % maxWeight + 1;
-    graph->addEdge(vertex, v, weight);
-    cout << "Randomly added edge: " << vertex << " -> " << v << " with weight " << weight << '\n';
+    int distance = rand() % maxWeight + 1;
+    graph->addEdge(vertex, v, distance);
+    cout << "Randomly added edge: " << vertex << " -> " << v << " with distance " << distance << '\n';
 }
 
 // Function to print the distance map
@@ -96,7 +96,7 @@ int main() {
             case 1: { // Generate random graph
                 cout << "Input number of vertices: ";
                 cin >> vertices;
-                cout << "Input max weight for edges: ";
+                cout << "Input maximum distance: ";
                 int maxWeight;
                 cin >> maxWeight;
 
@@ -120,11 +120,11 @@ int main() {
                     cin >> numEdges;
                 }while(numEdges > vertices*(vertices-1)/2);
 
-                cout << "Enter edges (format: vertex1 vertex2 weight):\n";
+                cout << "Enter edges (format: vertex1 vertex2 distance):\n";
                 for (int i = 0; i < numEdges; ++i) {
-                    int a, b, weight;
-                    cin >> a >> b >> weight;
-                    graph->addEdge(a, b, weight);
+                    int a, b, distance;
+                    cin >> a >> b >> distance;
+                    graph->addEdge(a, b, distance);
                 }
                 cout << graph->printGraph() << endl;
                 hasGraph = true;
@@ -258,10 +258,10 @@ void LoadFromFile(Graph*& graph, string nameFile) {
         int vertex;
         char colon;
         iss >> vertex >> colon;
-        int neighbor, weight;
+        int neighbor, distance;
         char open, comma, close;
-        while (iss >> open >> neighbor >> comma >> weight >> close) {
-            graph->addEdge(vertex, neighbor, weight);
+        while (iss >> open >> neighbor >> comma >> distance >> close) {
+            graph->addEdge(vertex, neighbor, distance);
         }
     }
     file.close();
