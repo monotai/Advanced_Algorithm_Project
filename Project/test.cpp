@@ -20,6 +20,10 @@ public:
 };
 
 int main() {
+<<<<<<< HEAD
+    PriorityQueue
+}
+=======
     cout << "Input number of edges: ";
     int numEdges;
     cin >> numEdges;
@@ -39,3 +43,4 @@ int main() {
     delete graph; // Clean up memory
     return 0;
 }
+>>>>>>> f9b8c6b8b3861f33417655e3935cda81115afebc

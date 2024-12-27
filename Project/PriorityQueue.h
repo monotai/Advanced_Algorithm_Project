@@ -61,7 +61,7 @@ class PriorityQueue {
             previous->next = current->next;
         }
 
-        delete current;
+        delete current  ;
 
         add_with_priority(vertex, new_distance);
     }
