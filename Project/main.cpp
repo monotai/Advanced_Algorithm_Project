@@ -3,7 +3,12 @@
 #include <stack>
 #include <ctime>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 using namespace std;
+
+void LoadFromFile(Graph*& graph, string nameFile);
+void SaveToFile(Graph* graph, string nameFile);
 
 // Function to generate a random graph
 void randGraph(Graph* graph, int vertices, int maxWeight) {
@@ -15,7 +20,7 @@ void randGraph(Graph* graph, int vertices, int maxWeight) {
             a = rand() % vertices;
             b = rand() % vertices;
         } while (a == b || graph->find(a, b)); // Avoid self-loops and duplicate edges
-        graph->addEdge(a, b, distance);
+        graph->addEdge(a, b, weight);
     }
 }
 
@@ -25,9 +30,9 @@ void randpath(Graph* graph,int vertices, int vertex, int maxWeight) {
     while (vertex == v || graph->find(vertex, v)) {
         v = rand() % vertices;
     }
-    int distance = rand() % maxWeight + 1;
-    graph->addEdge(vertex, v, distance);
-    cout << "Randomly added edge: " << vertex << " -> " << v << " with distance " << distance << '\n';
+    int weight = rand() % maxWeight + 1;
+    graph->addEdge(vertex, v, weight);
+    cout << "Randomly added edge: " << vertex << " -> " << v << " with weight " << weight << '\n';
 }
 
 // Function to print the distance map
@@ -81,7 +86,8 @@ int main() {
         cout << "\nMain Menu:\n";
         cout << "1. Generate Random Graph\n";
         cout << "2. Insert Graph Manually\n";
-        cout << "3. Exit\n";
+        cout << "3. Insert Graph from File\n";
+        cout << "4. Exit\n";
         cout << "Enter your choice: ";
         int choice;
         cin >> choice;
@@ -90,7 +96,7 @@ int main() {
             case 1: { // Generate random graph
                 cout << "Input number of vertices: ";
                 cin >> vertices;
-                cout << "Input maximum distance: ";
+                cout << "Input max weight for edges: ";
                 int maxWeight;
                 cin >> maxWeight;
 
@@ -108,27 +114,40 @@ int main() {
                 graph = new Graph(vertices);
                 disM.resize(vertices);
                 prev.resize(vertices);
-
-                cout << "Input number of edges: ";
                 int numEdges;
-                cin >> numEdges;
+                do {
+                    cout << "Input number of edges: ";
+                    cin >> numEdges;
+                }while(numEdges > vertices*(vertices-1)/2);
 
-                cout << "Enter edges (format: vertex1 vertex2 distance):\n";
+                cout << "Enter edges (format: vertex1 vertex2 weight):\n";
                 for (int i = 0; i < numEdges; ++i) {
-                    int a, b, distance;
-                    cin >> a >> b >> distance;
-                    graph->addEdge(a, b, distance);
+                    int a, b, weight;
+                    cin >> a >> b >> weight;
+                    graph->addEdge(a, b, weight);
                 }
                 cout << graph->printGraph() << endl;
                 hasGraph = true;
                 break;
             }
-            case 3: // Exit
-                run = false;
-                break;
-
-            default:
-                cout << "Invalid choice. Please try again.\n";
+        case 3:{ // insert from file
+            string nameFile;
+            cout << "input name of name of file: ";
+            cin >> nameFile;
+            LoadFromFile(graph, nameFile);
+            if (graph != nullptr) {
+                disM.resize(graph->size());
+                prev.resize(graph->size());
+                cout << graph->printGraph() << endl;
+                hasGraph = true;
+            }
+            break;
+            }
+        case 4:{ //Exit
+            run = false;
+            break;}
+        default:
+            cout << "Invalid choice. Please try again.\n";
         }
 
         while (hasGraph) {
@@ -136,7 +155,8 @@ int main() {
             cout << "\nGraph Menu:\n";
             cout << "1. Print Graph\n";
             cout << "2. Run Dijkstra's Algorithm\n";
-            cout << "3. Back to Main Menu\n";
+            cout << "3. Save Graph to file\n";
+            cout << "4. Back to Main Menu\n";
             cout << "Enter your choice: ";
             int subChoice;
             cin >> subChoice;
@@ -152,7 +172,14 @@ int main() {
                     findPath = true;
                     break;
                 }
-                case 3: // Back to main menu
+                case 3: { // Save graph to file
+                    string nameFile;
+                    cout << "input name of file: ";
+                    cin >> nameFile;
+                    SaveToFile(graph, nameFile);
+                    break;
+                }
+                case 4: // Back to main menu
                     hasGraph = false;
                     break;
 
