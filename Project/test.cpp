@@ -1,69 +1,46 @@
 #include <iostream>
-#include <stack>
-#include "Graph.h"
-
+#include <vector>
+#include <tuple>
 using namespace std;
-// Function to generate a random graph
-void randGraph(Graph* graph, int vertices, int maxWeight) {
-    int maxEdges = vertices * (vertices - 1) / 2;
-    for (int i = 0; i < maxEdges; ++i) {
-        int weight = rand() % maxWeight + 1;
-        int a, b;
-        do {
-            a = rand() % vertices;
-            b = rand() % vertices;
-        } while (a == b || graph->find(a, b)); // Avoid self-loops and duplicate edges
-        graph->addEdge(a, b, weight);
-    }
-}
-void randpath(Graph* graph,int vertices, int vertex, int maxWeight) {
-    int v = rand() % vertices;
-    while (vertex == v || graph->find(vertex, v)) {
-        v = rand() % vertices;
-    }
-    int weight = rand() % maxWeight + 1;
-    graph->addEdge(vertex, v, weight);
-    cout << "Randomly added edge: " << vertex << " -> " << v << " with weight " << weight << '\n';
-}
 
-// Function to print the distance map
-void printDistanceMap(const vector<int>& disM, int source) {
-    if (disM.empty()) {
-        cout << "No data! Please run Dijkstra's algorithm again.\n";
-        return;
-    }
-    for (size_t i = 0; i < disM.size(); ++i) {
-        cout << "Distance from " << source << " to " << i << " is: " << disM[i] << '\n';
-    }
-}
+class Graph {
+public:
+    vector<tuple<int, int, int>> edges; // Stores edges as (vertex1, vertex2, weight)
 
-// Function to print the path from source to destination
-void printPath(const vector<int>& prev, int source, int end) {
-    if (prev.empty()) {
-        cout << "No data! Please run Dijkstra's algorithm again.\n";
-        return;
+    void addEdge(int a, int b, int weight) {
+        edges.emplace_back(a, b, weight);
     }
-    stack<int> path;
-    int current = end;
-    while (current != source) {
-        if (current == -1) {
-            cout << "No valid path exists.\n";
-            return;
+
+    void printEdges() {
+        for (const auto& edge : edges) {
+            cout << "Edge: " << get<0>(edge) << " -> " << get<1>(edge)
+                 << " with weight " << get<2>(edge) << endl;
         }
-        path.push(current);
-        current = prev[current];
     }
-    path.push(source);
-
-    cout << "Path from " << source << " to " << end << ": ";
-    while (!path.empty()) {
-        cout << path.top();
-        path.pop();
-        if (!path.empty()) cout << " -> ";
-    }
-    cout << "\n";
-}
+};
 
 int main() {
+<<<<<<< HEAD
     PriorityQueue
 }
+=======
+    cout << "Input number of edges: ";
+    int numEdges;
+    cin >> numEdges;
+
+    Graph* graph = new Graph();
+
+    cout << "Enter edges (format: vertex1 vertex2 weight):\n";
+    for (int i = 0; i < numEdges; ++i) {
+        int a, b, weight;
+        cin >> a >> b >> weight;
+        graph->addEdge(a, b, weight);
+    }
+
+    cout << "Edges in the graph:\n";
+    graph->printEdges();
+
+    delete graph; // Clean up memory
+    return 0;
+}
+>>>>>>> f9b8c6b8b3861f33417655e3935cda81115afebc
