@@ -205,6 +205,7 @@ int main() {
                         cout << "Input destination vertex: ";
                         cin >> end;
                         printPath(prev, source, end);
+                        cout << "Distance from " << source << " to " << end << " is: " << disM[end] << '\n';
                         break;
                     }
                     case 3: // Back to graph menu
