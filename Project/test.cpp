@@ -65,14 +65,5 @@ void printPath(const vector<int>& prev, int source, int end) {
 }
 
 int main() {
-    Graph *graph = nullptr;
-    vector<int> disM(5), prev(5);
-    graph = new Graph(5);
-    randGraph(graph, 5, 10);
-    cout << graph->printGraph() << endl;
-    graph->dijkstra(0, disM, prev);
-    printDistanceMap(disM, 0);
-    printPath(prev, 0, 4);
-    delete graph;
-    return 0;
+    PriorityQueue
 }
